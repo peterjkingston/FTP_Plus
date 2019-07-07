@@ -14,13 +14,26 @@ namespace FTP_Plus
 
         }
 
-        public FolderNode(string lineFTPListDetail, string ftpListDirectory, FTPDetailParser parser)
+        /// <summary>
+        /// Constructor for the top FTP server directory. Use this one.
+        /// </summary>
+        /// <param name="connection"></param>
+        public FolderNode(FTPConnection connection)
+        {
+            this.Modified = default;
+            this.Name = "httpdocs";
+            this.IsDirectory = true;
+            this.RelativeParentDirectory = "/";
+            SubdirectoyMap = new FileSystemMap("/", FileSystemMap.FileBuildType.FTP, connection);
+        }
+
+        public FolderNode(string lineFTPListDetail, string ftpListDirectory, FTPDetailParser parser, FTPConnection connection)
         {
             this.Modified = parser.ParseModifiedDate(lineFTPListDetail);
             this.Name = parser.ParseFileName(lineFTPListDetail);
             this.IsDirectory = parser.ParseDIRMarker(lineFTPListDetail);
             this.RelativeParentDirectory = ftpListDirectory;
-            SubdirectoyMap = new FileSystemMap(Path.Combine(ftpListDirectory,Name),FileSystemMap.FileBuildType.FTP);
+            SubdirectoyMap = new FileSystemMap(Path.Combine(ftpListDirectory,Name),FileSystemMap.FileBuildType.FTP, connection);
         }
 
         public FolderNode(DateTime modified, string name, bool isDirectory, string parentDirectory)

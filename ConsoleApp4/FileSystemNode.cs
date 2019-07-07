@@ -12,10 +12,8 @@ namespace FTP_Plus
         public bool IsDirectory { get; internal set; }
         public string RelativeParentDirectory { get; internal set; }
 
-        public FileSystemNode()
-        {
+        public FileSystemNode(){}
 
-        }
         public FileSystemNode(string lineFTPListDetail, string ftpListDirectory, FTPDetailParser parser)
         {
             Modified = parser.ParseModifiedDate(lineFTPListDetail);

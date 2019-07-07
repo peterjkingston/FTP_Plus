@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,7 +13,7 @@ namespace FTP_Plus
     {
         public string Domain { get; private set; }
         private NetworkCredential _credential;
-        public FTPConnection(string domain, string username, string password)
+        public FTPConnection(string domain, string username, SecureString password)
         {
             this.Domain = domain;
             _credential = new NetworkCredential(username, password);

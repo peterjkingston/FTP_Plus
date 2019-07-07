@@ -10,7 +10,7 @@ namespace FTP_Plus
         public enum FileBuildType{Local, FTP, HTTP}
         private Dictionary<string, FileSystemNode> _internalDict;
 
-        public FileSystemMap(string directory,FileBuildType buildType)
+        public FileSystemMap(string directory, FileBuildType buildType, FTPConnection connection = null)
         {
             _internalDict = new Dictionary<string, FileSystemNode>();
 
@@ -20,9 +20,10 @@ namespace FTP_Plus
                     BuildFromLocal(directory);
                     break;
                 case FileBuildType.FTP:
-                    BuildFromFTP(directory);
+                    BuildFromFTP(directory, connection);
                     break;
                 case FileBuildType.HTTP:
+                    throw new NotImplementedException();
                     break;
                 default:
                     break;
@@ -53,7 +54,7 @@ namespace FTP_Plus
             }
         }
 
-        public void BuildFromFTP(string directory)
+        public void BuildFromFTP(string directory, FTPConnection connection)
         {
 
         }

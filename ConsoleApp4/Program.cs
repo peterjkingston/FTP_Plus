@@ -2,6 +2,8 @@
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Security;
+using FTP_Plus;
 
 namespace ConsoleApp4
 {
@@ -9,28 +11,43 @@ namespace ConsoleApp4
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Fetching peterjkingston.com\n");
+            Console.WriteLine("Welcome to FTP Plus!");
 
-            Console.WriteLine(GetFTPDir("peterjkingston.com", "username", ""));
+            Console.WriteLine("Username->");
+            string username = Console.ReadLine();
 
+            Console.WriteLine("Passowrd->");
+            SecureString password = GetPassword();
+
+            Console.WriteLine("\nFetching peterjkingston.com\n");
+
+            FTPConnection connection = new FTPConnection("peterjkingston.com", username, password);
+            FolderNode mainNode = new FolderNode(connection);
+            
             Console.ReadKey(true);
         }
 
-        private static string GetFTPDir(string domain, string username, string password)
+        static SecureString GetPassword()
         {
-            WebRequest ftpRequest = WebRequest.Create($"ftp://{domain}/");
-            ftpRequest.Credentials = new NetworkCredential(username, password);
+            SecureString pass = new SecureString();
+            int keyPosition = 0;
 
-            ftpRequest.Method = WebRequestMethods.Ftp.ListDirectoryDetails;
-
-            using(var response = (FtpWebResponse)ftpRequest.GetResponse())
+            ConsoleKey escapeKey = ConsoleKey.Enter;
+            bool escape = false;
+            
+            do
             {
-                string message = default;
-                TextReader reader = new StreamReader(response.GetResponseStream());
-                message = reader.ReadToEnd();
-                response.Close();
-                return message;
-            }
+                ConsoleKeyInfo key = Console.ReadKey(true);
+                if(key.Key != escapeKey)
+                {
+                    Console.Write("*");
+                    pass.InsertAt (keyPosition++, key.KeyChar);
+                }
+
+                escape = key.Key == escapeKey ? true : false;
+            } while (!escape);
+
+            return pass;
         }
     }
 }
