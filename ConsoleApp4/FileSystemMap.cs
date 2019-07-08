@@ -56,7 +56,20 @@ namespace FTP_Plus
 
         public void BuildFromFTP(string directory, FTPConnection connection)
         {
-
+            string[] response = connection.GetDirectoryContentsAsync(directory).Result;
+           
+            for (int i = 0; i < response.Length; i++)
+            {
+                FileSystemNode node = new FileSystemNode(response[i], directory, new FTPDetailParser());
+                if (node.IsDirectory)
+                {
+                    this._internalDict.Add(node.Name,new FolderNode(node, FileBuildType.FTP, connection));
+                }
+                else
+                {
+                    this._internalDict.Add(node.Name, node);
+                }
+            }
         }
     }
 }

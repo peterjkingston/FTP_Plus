@@ -21,11 +21,9 @@ namespace FTP_Plus
 
         public async Task<string> GetDirectoryAsync(string relativePath)
         {
-            FtpWebRequest request = (FtpWebRequest)WebRequest.Create($"ftp://{Domain}{relativePath}");
-            request.Credentials = _credential;
-            request.Method = WebRequestMethods.Ftp.ListDirectoryDetails;
+            FtpWebRequest request = GetFTPRequest(relativePath, WebRequestMethods.Ftp.ListDirectoryDetails);
 
-            using(var response = await request.GetResponseAsync())
+            using (var response = await request.GetResponseAsync())
             {
                 TextReader reader = new StreamReader(response.GetResponseStream());
                 string message = reader.ReadToEnd();
@@ -37,5 +35,41 @@ namespace FTP_Plus
             }
         }
 
+        private FtpWebRequest GetFTPRequest(string relativePath, string ftpMethod)
+        {
+            FtpWebRequest request = (FtpWebRequest)WebRequest.Create($"ftp://{Domain}{relativePath}");
+            request.Credentials = _credential;
+            request.Method = ftpMethod;
+
+            return request;
+        }
+
+        public async Task<string[]> GetDirectoryContentsAsync(string relativePath)
+        {
+            FtpWebRequest request = GetFTPRequest(relativePath, WebRequestMethods.Ftp.ListDirectoryDetails);
+
+            using (var response = await request.GetResponseAsync())
+            {
+                Stream responseStream = response.GetResponseStream();
+                TextReader reader = new StreamReader(responseStream);
+                List<String> lines = new List<String>();
+               
+                bool escape = false;
+
+                while (!escape)
+                {
+                    String line = new String(reader.ReadLine());
+                    escape = line == null;
+
+                    if (!escape)
+                    {
+                        lines.Add(line);
+                    }
+                }
+
+                reader.Close();
+                return lines.ToArray();
+            }
+        }
     }    
 }

@@ -27,6 +27,15 @@ namespace FTP_Plus
             SubdirectoyMap = new FileSystemMap("/", FileSystemMap.FileBuildType.FTP, connection);
         }
 
+        public FolderNode(FileSystemNode node, FileSystemMap.FileBuildType buildType, FTPConnection connection = null)
+        {
+            this.Name = node.Name;
+            this.Modified = node.Modified;
+            this.IsDirectory = this.IsDirectory;
+            this.RelativeParentDirectory = this.RelativeParentDirectory;
+            SubdirectoyMap = new FileSystemMap($"{RelativeParentDirectory}/", buildType, connection);
+        }
+
         public FolderNode(string lineFTPListDetail, string ftpListDirectory, FTPDetailParser parser, FTPConnection connection)
         {
             this.Modified = parser.ParseModifiedDate(lineFTPListDetail);
