@@ -54,21 +54,29 @@ namespace FTP_Plus
             }
         }
 
-        public void BuildFromFTP(string directory, FTPConnection connection)
+        public async void BuildFromFTP(string directory, FTPConnection connection)
         {
-            string[] response = connection.GetDirectoryContentsAsync(directory).Result;
-           
-            for (int i = 0; i < response.Length; i++)
+            try
             {
-                FileSystemNode node = new FileSystemNode(response[i], directory, new FTPDetailParser());
-                if (node.IsDirectory)
+                string[] response = await connection.GetDirectoryContentsAsync(directory);
+
+                for (int i = 0; i < response.Length; i++)
                 {
-                    this._internalDict.Add(node.Name,new FolderNode(node, FileBuildType.FTP, connection));
+                    FileSystemNode node = new FileSystemNode(response[i], directory, new FTPDetailParser());
+                    if (node.IsDirectory)
+                    {
+                        this._internalDict.Add(node.Name, new FolderNode(node, FileBuildType.FTP, connection));
+                    }
+                    else
+                    {
+                        this._internalDict.Add(node.Name, node);
+                    }
                 }
-                else
-                {
-                    this._internalDict.Add(node.Name, node);
-                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{ex.Message}");
+                return;
             }
         }
     }

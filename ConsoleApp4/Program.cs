@@ -13,16 +13,21 @@ namespace ConsoleApp4
         {
             Console.WriteLine("Welcome to FTP Plus!");
 
-            Console.WriteLine("Username->");
+            Console.Write("Username-> ");
             string username = Console.ReadLine();
 
-            Console.WriteLine("Passowrd->");
+            Console.Write("Password-> ");
             SecureString password = GetPassword();
 
             Console.WriteLine("\nFetching peterjkingston.com\n");
 
             FTPConnection connection = new FTPConnection("peterjkingston.com", username, password);
-            FolderNode mainNode = new FolderNode(connection);
+            connection.FailedLogon += DisplayMessage;
+            FolderNode mainNodeFTP = new FolderNode(connection);
+
+            string localDirectory = @"C:\users\peter\Desktop\httpdocs";
+            FolderNode mainNodeLocal = new FolderNode(localDirectory);
+            FileSystemWatcher watcher = new FileSystemWatcher(localDirectory);
             
             Console.ReadKey(true);
         }
@@ -33,6 +38,8 @@ namespace ConsoleApp4
             int keyPosition = 0;
 
             ConsoleKey escapeKey = ConsoleKey.Enter;
+            ConsoleKey deleteKey = ConsoleKey.Delete | ConsoleKey.Backspace;
+
             bool escape = false;
             
             do
@@ -40,14 +47,28 @@ namespace ConsoleApp4
                 ConsoleKeyInfo key = Console.ReadKey(true);
                 if(key.Key != escapeKey)
                 {
-                    Console.Write("*");
-                    pass.InsertAt (keyPosition++, key.KeyChar);
+                    if(key.Key != deleteKey)
+                    {
+                        Console.Write("*");
+                        pass.InsertAt(keyPosition++, key.KeyChar);
+                    }
+                    else
+                    {
+                        //Suppose to backspace... doesn't.
+                        Console.Write("\b");
+                        pass.InsertAt(keyPosition--, '\b');
+                    }
                 }
 
                 escape = key.Key == escapeKey ? true : false;
             } while (!escape);
 
             return pass;
+        }
+
+        static void DisplayMessage(object sender, string message)
+        {
+            Console.WriteLine(message);
         }
     }
 }

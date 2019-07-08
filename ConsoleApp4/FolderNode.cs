@@ -31,16 +31,16 @@ namespace FTP_Plus
         {
             this.Name = node.Name;
             this.Modified = node.Modified;
-            this.IsDirectory = this.IsDirectory;
-            this.RelativeParentDirectory = this.RelativeParentDirectory;
-            SubdirectoyMap = new FileSystemMap($"{RelativeParentDirectory}/", buildType, connection);
+            this.IsDirectory = true;
+            this.RelativeParentDirectory = node.RelativeParentDirectory;
+            SubdirectoyMap = new FileSystemMap(Path.Combine(node.RelativeParentDirectory,Name), buildType, connection);
         }
 
         public FolderNode(string lineFTPListDetail, string ftpListDirectory, FTPDetailParser parser, FTPConnection connection)
         {
             this.Modified = parser.ParseModifiedDate(lineFTPListDetail);
             this.Name = parser.ParseFileName(lineFTPListDetail);
-            this.IsDirectory = parser.ParseDIRMarker(lineFTPListDetail);
+            this.IsDirectory = true;
             this.RelativeParentDirectory = ftpListDirectory;
             SubdirectoyMap = new FileSystemMap(Path.Combine(ftpListDirectory,Name),FileSystemMap.FileBuildType.FTP, connection);
         }
@@ -49,9 +49,18 @@ namespace FTP_Plus
         {
             this.Modified = modified;
             this.Name = name;
-            this.IsDirectory = isDirectory;
+            this.IsDirectory = true;
             this.RelativeParentDirectory = parentDirectory;
             SubdirectoyMap = new FileSystemMap(Path.Combine(parentDirectory, Name), FileSystemMap.FileBuildType.Local);
+        }
+
+        public FolderNode(string localDirectory)
+        {
+            this.Modified = Directory.GetLastWriteTime(localDirectory);
+            this.Name = Path.GetFileName(localDirectory);
+            this.IsDirectory = true;
+            this.RelativeParentDirectory = Path.GetDirectoryName(localDirectory);
+            SubdirectoyMap = new FileSystemMap(Path.Combine(RelativeParentDirectory, Name), FileSystemMap.FileBuildType.Local, null);
         }
     }
 }

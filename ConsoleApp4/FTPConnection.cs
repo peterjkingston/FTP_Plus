@@ -11,6 +11,8 @@ namespace FTP_Plus
 {
     public class FTPConnection
     {
+        public event EventHandler<string> FailedLogon;
+
         public string Domain { get; private set; }
         private NetworkCredential _credential;
         public FTPConnection(string domain, string username, SecureString password)
@@ -46,30 +48,44 @@ namespace FTP_Plus
 
         public async Task<string[]> GetDirectoryContentsAsync(string relativePath)
         {
-            FtpWebRequest request = GetFTPRequest(relativePath, WebRequestMethods.Ftp.ListDirectoryDetails);
-
-            using (var response = await request.GetResponseAsync())
+            string[] result = new string[]{""};
+            try
             {
-                Stream responseStream = response.GetResponseStream();
-                TextReader reader = new StreamReader(responseStream);
-                List<String> lines = new List<String>();
-               
-                bool escape = false;
-
-                while (!escape)
+                FtpWebRequest request = GetFTPRequest(relativePath, WebRequestMethods.Ftp.ListDirectoryDetails);
+                using (var response = await request.GetResponseAsync())
                 {
-                    String line = new String(reader.ReadLine());
-                    escape = line == null;
 
-                    if (!escape)
+                    TextReader reader = new StreamReader(response.GetResponseStream());
+                    List<string> lines = new List<string>();
+
+                    bool escape = false;
+                    string line;
+
+                    while (!escape)
                     {
-                        lines.Add(line);
-                    }
-                }
+                        line = reader.ReadLine();
+                        escape = line == null;
 
-                reader.Close();
-                return lines.ToArray();
+                        if (!escape)
+                        {
+                            lines.Add(line);
+                        }
+                    }
+                    result = lines.ToArray();
+                    reader.Close();
+                }
             }
+            catch(Exception ex)
+            {
+                OnFailedLogon(ex.Message);
+            }
+
+            return result;
+        }
+
+        protected virtual void OnFailedLogon(string message)
+        {
+            FailedLogon?.Invoke(this, message);
         }
     }    
 }
