@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using ConsoleApp4;
 
 namespace FTP_Plus
 {
@@ -66,11 +68,13 @@ namespace FTP_Plus
                     FileSystemNode node = new FileSystemNode(response[i], directory, new FTPDetailParser());
                     if (node.IsDirectory)
                     {
-                        this._internalDict.Add(node.Name, new FolderNode(node, FileBuildType.FTP, connection));
+                        this._internalDict.Add(Path.Combine(node.RelativeParentDirectory,node.Name), 
+                                                  new FolderNode(node, FileBuildType.FTP, connection));
                     }
                     else
                     {
-                        this._internalDict.Add(node.Name, node);
+                        this._internalDict.Add(Path.Combine(node.RelativeParentDirectory, node.Name), 
+                                               node);
                     }
                 }
             }
@@ -79,6 +83,11 @@ namespace FTP_Plus
                 Console.WriteLine($"{ex.Message}");
                 return;
             }
+        }
+
+        public FileSystemNode[] GetContents()
+        {
+            return new List<FileSystemNode>(_internalDict.Values).ToArray();
         }
     }
 }
