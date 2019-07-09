@@ -33,6 +33,7 @@ namespace FTP_Plus
             this.Modified = node.Modified;
             this.IsDirectory = true;
             this.RelativeParentDirectory = node.RelativeParentDirectory;
+            this.Size = node.Size;
             SubdirectoyMap = new FileSystemMap(Path.Combine(node.RelativeParentDirectory,Name), buildType, connection);
         }
 
@@ -42,6 +43,7 @@ namespace FTP_Plus
             this.Name = parser.ParseFileName(lineFTPListDetail);
             this.IsDirectory = true;
             this.RelativeParentDirectory = ftpListDirectory;
+            this.Size = 0;
             SubdirectoyMap = new FileSystemMap(Path.Combine(ftpListDirectory,Name),FileSystemMap.FileBuildType.FTP, connection);
         }
 
@@ -51,6 +53,7 @@ namespace FTP_Plus
             this.Name = name;
             this.IsDirectory = true;
             this.RelativeParentDirectory = parentDirectory;
+            this.Size = 0;
             SubdirectoyMap = new FileSystemMap(Path.Combine(parentDirectory, Name), FileSystemMap.FileBuildType.Local);
         }
 
@@ -60,6 +63,7 @@ namespace FTP_Plus
             this.Name = Path.GetFileName(localDirectory);
             this.IsDirectory = true;
             this.RelativeParentDirectory = Path.GetDirectoryName(localDirectory);
+            this.Size = 0;
             SubdirectoyMap = new FileSystemMap(Path.Combine(RelativeParentDirectory, Name), FileSystemMap.FileBuildType.Local, null);
         }
     }

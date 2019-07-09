@@ -8,17 +8,21 @@ namespace FTP_Plus
     {
         public DateTime ParseModifiedDate(string listDetail)
         {
-            string strDate = listDetail.Substring(1, 8);
+            
+            string strDate = listDetail.Substring(1, 16);
             DateTime dt = DateTime.Parse(strDate);
+
             return dt;
         }
 
         public string ParseFileName(string listDetail)
         {
-            string rest = listDetail.Substring(9, listDetail.Length - 9);
-            rest = rest.IndexOf("<DIR>") > 0 ? rest.Substring(rest.IndexOf("<DIR>") + 5, rest.Length - (rest.IndexOf("<DIR>") + 5)).Trim() :
-                                               rest.Trim();
-            return rest;
+            string rest = listDetail.Substring(17, listDetail.Length - 17).Trim();
+            
+            string[] parts = rest.Split(' ', 2);
+            rest = parts[1].Trim();
+
+            return rest; 
         }
 
         /// <summary>
@@ -29,6 +33,13 @@ namespace FTP_Plus
         public bool ParseDIRMarker(string listDetail)
         {
             return listDetail.IndexOf("<DIR>") > 0;
+        }
+
+        public uint ParseSize(string listDetail)
+        {
+            string[] parts = listDetail.Substring(17, listDetail.Length - 17).Trim().Split(' ');
+
+            return (uint)Int32.Parse(parts[0]);
         }
     }
 }

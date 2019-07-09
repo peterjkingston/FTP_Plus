@@ -49,7 +49,8 @@ namespace FTP_Plus
                 FileSystemNode fileNode = new FileSystemNode(Directory.GetLastWriteTime(file),
                                                                Path.GetFileName(file),
                                                                false,
-                                                               Path.GetDirectoryName(file));
+                                                               Path.GetDirectoryName(file),
+                                                               (uint)new FileInfo(file).Length);
                 _internalDict.Add(fileNode.Name, fileNode);
             }
         }

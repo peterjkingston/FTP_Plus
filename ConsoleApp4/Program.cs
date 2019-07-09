@@ -11,7 +11,7 @@ namespace ConsoleApp4
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Welcome to FTP Plus!");
+            Console.WriteLine("Welcome to FTP Plus!\n");
 
             Console.Write("Username-> ");
             string username = Console.ReadLine();
