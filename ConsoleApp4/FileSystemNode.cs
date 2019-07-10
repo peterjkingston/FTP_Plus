@@ -46,5 +46,9 @@ namespace FTP_Plus
             return Path.Combine(new string[]{RelativeParentDirectory, Name});
         }
         
+        public bool IsNewerThan(FileSystemNode comparedNode)
+        {
+            return this.Modified > comparedNode.Modified;
+        }
     }
 }
